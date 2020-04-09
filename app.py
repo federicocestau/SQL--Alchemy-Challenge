@@ -92,25 +92,28 @@ def tobs():
 
 @app.route("/api/v1.0/<start>")
 @app.route("/api/v1.0/<start>/<end>")
-def start():
+def stats(start = None, end = None):
     #Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start
     session = Session(engine)
     
-    results= session.query(func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).\
-            filter(measurement.date >= start_date).all()
+    if not end:
+        # calculate TMIN, TAVG, TMAX for dates greater than start
+        results = session.query(func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).\
+            filter(measurement.date >= start).all()
+        
+        return jsonify(results[0])
     
+    else: 
     
-    
-    
-if(end_date):
-    results= session.query(func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).\
-    filter(measurement.date >= start_date).filter(measurement.date <= end_date).all()
+        # calculate TMIN, TAVG, TMAX with start and end dates
+        results= 
+        session.query(func.min(measurement.tobs), func.avg(measurement.tobs), func.max(measurement.tobs)).\
+        filter(measurement.date >= start_date).\
+        filter(measurement.date <= end_date).all()
 
-    results = [s[0] for s in results]
+        session.close()
 
-    session.close()
-
-    return jsonify(results)
+        return jsonify(results[0])
 
 if __name__ == '__main__':
     app.run(debug=True)
